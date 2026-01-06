@@ -1,0 +1,24 @@
+services:
+  chroma:
+    image: chromadb/chroma:latest
+    container_name: chroma
+    volumes:
+      - chroma_data_policyrag:/chroma_policyrag
+    environment:
+      - ALLOW_RESET=true
+      - ANONYMIZED_TELEMETRY=false
+      - CHROMA_DB_DIR=/chroma_policyrag
+    ports:
+      - "8001:8000"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v2/heartbeat"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    command: run --path /chroma_policyrag --host 0.0.0.0
+
+volumes:
+  chroma_data_policyrag:
+    driver: local 
